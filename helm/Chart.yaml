@@ -1,0 +1,5 @@
+apiVersion: v2
+name: assessment
+description: Helm chart for deploying backend and data APIs
+version: 1.0.0
+

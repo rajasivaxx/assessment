@@ -1,0 +1,7 @@
+backendApi:
+  image: "backend-api:v1"  # Replace with your actual image name if different
+  imagePullPolicy: Never
+  port: 5000
+  env:
+    EXTERNAL_INTEGRATION_KEY: "your_dev_key"
+

@@ -1,0 +1,5 @@
+dataApi:
+  image: "data-api:v1"  # Replace with your actual image name if different
+  imagePullPolicy: Never
+  port: 5001
+

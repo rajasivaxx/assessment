@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api-unique
+  labels:
+    app: backend-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-api
+  template:
+    metadata:
+      labels:
+        app: backend-api
+    spec:
+      containers:
+        - name: backend-api
+          image: {{ .Values.backendApi.image }}
+          env:
+            - name: EXTERNAL_INTEGRATION_KEY
+              value: {{ .Values.backendApi.env.EXTERNAL_INTEGRATION_KEY }}
+          ports:
+            - containerPort: {{ .Values.backendApi.port }}
+
