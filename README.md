@@ -139,18 +139,18 @@ Installs Helm collection: Ensures the community.kubernetes collection is install
 Adds Helm repository: Ensures that the Helm repository is available.
 
 Deploys backend: Uses Helm to deploy backend_api from the specified chart path (../helm) into backend-namespace.
-```
+
 ![alt text](screenshot/image-2.png)
-```
+
 
 #### playbook_data.yml: Automates the deployment of data_api.
 
 Installs Helm collection: Ensures the community.kubernetes collection is installed.
 Adds Helm repository: Ensures that the Helm repository is available.
 Deploys data API: Uses Helm to deploy data_api from the specified chart path (../helm-data) into data-namespace.
-```
+
 ![alt text](screenshot/image-3.png)
-```
+
 This Ansible setup streamlines the process of deploying both applications to Kubernetes, with each playbook responsible for a single API. The configuration is designed to be adaptable, allowing for changes to namespaces or Helm release names through the group_vars/all.yml file.
 
 ## 7. Verifying Deployments and Capturing Screenshots
@@ -161,24 +161,24 @@ Run the following command to list the pods in each namespace:
 ```
 kubectl get pods -n backend-namespace
 kubectl get pods -n data-namespace
-
+```
 ![alt text](screenshot/image-4.png)
 
-```
+
 
 #### Port Forward and Logs in Browser
 Forward the backend API port to access the log messages from your browser:
-
+```
 kubectl port-forward svc/backend-api-service-unique 5000:80 -n backend-namespace
 ```
 ![alt text](screenshot/image-5.png)
 ![alt text](screenshot/image-6.png)
-```
+
 Then open your browser and navigate to http://localhost:5000 to see the log output. 
-```
+
 ![alt text](screenshot/image-7.png)
 ![alt text](screenshot/image-8.png)
-```
+
 
 #### Different Routes for Backend API
 
@@ -187,13 +187,13 @@ The backend API has two main routes:
 - Root Route (/): This route generates and logs random messages. You should see log entries when you access this endpoint.
 
 - Download External Logs Route (/download_external_logs): This route attempts to interact with an external API. If you do not specify a valid environment, you will receive an error message indicating "Invalid environment".
-```
+
 ![alt text](screenshot/image-12.png)
-```
+
 - If you specify an environment but use a dummy URL, you will get an error response similar to:
-```
+
 ![alt text](screenshot/image-11.png)
-```
+
 Since this is a dummy URL with dummy integration keys, no successful connection can be established.
 
 #### Repeat for Data API
@@ -201,14 +201,14 @@ Since this is a dummy URL with dummy integration keys, no successful connection 
 Similarly, set up port forwarding for the data API service:
 
 kubectl port-forward svc/data-api-service-unique 5001:80 -n data-namespace
-```
+
 ![alt text](screenshot/image-37.png)
-```
+
 Visit http://localhost:5001 in the browser and take a screenshot of the log output.
 
-```
+
 ![alt text](screenshot/image-38.png)
-```
+
 
 Once these steps are done, you’ll have a complete set of visuals showing successful deployments and API functionality.
 
@@ -237,9 +237,9 @@ kubectl create namespace monitoring
 ```
 helm install kind-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --set prometheus.service.nodePort=30000 --set prometheus.service.type=NodePort --set grafana.service.nodePort=31000 --set grafana.service.type=NodePort --set alertmanager.service.nodePort=32000 --set alertmanager.service.type=NodePort --set prometheus-node-exporter.service.nodePort=32001 --set prometheus-node-exporter.service.type=NodePort
 ```
-```
+
 ![alt text](screenshot/image-13.png)
-```
+
 
 - Validate the Installation:
 
@@ -247,16 +247,16 @@ helm install kind-prometheus prometheus-community/kube-prometheus-stack --namesp
 ```
 kubectl --namespace monitoring get pods -l release=kind-prometheus
 ```
-```
+
 ![alt text](screenshot/image-14.png)
-```
+
 - Get all resources in the monitoring namespace:
 ```
 kubectl get all --namespace monitoring
 ```
-```
+
 ![alt text](screenshot/image-15.png)
-```
+
 
 - Access Dashboards:
 
@@ -271,12 +271,12 @@ User: admin
 Password: prom-operator
 ```
 
-```
+
 ![alt text](screenshot/image-16.png)
-```
-```
+
+
 ![alt text](screenshot/image-17.png)
-```
+
 
 #### Grafana rules you can set up to monitor resource utilization:
 
@@ -360,31 +360,34 @@ helm repo update
 
 ```
 helm upgrade --install --set args={--kubelet-insecure-tls} metrics-server metrics-server/metrics-server --namespace kube-system
-
-![alt text](screenshot/image-29.png)
 ```
+![alt text](screenshot/image-29.png)
+
 
 Useful Commands for Metrics Server:
 - Check node resource utilization:
 
 ```
 kubectl top nodes
+```
 ![alt text](screenshot/image-32.png)
 
-```
+
 - Check pod resource utilization:
 
 ```
 kubectl top pods --all-namespaces
-![alt text](screenshot/image-30.png)
 ```
+![alt text](screenshot/image-30.png)
+
 - Check container resource utilization:
 
 ```
 kubectl top pod <pod_name> -n <namespace>
+```
 ![alt text](screenshot/image-31.png)
 
-```
+
 
 Using the Metrics Server alongside Prometheus provides a comprehensive view of your Kubernetes cluster's performance and resource usage.
 
@@ -418,8 +421,9 @@ Get CPU and Memory Usage for All Containers in Pods with a Specific Label:
 
 - Backend API Container:
 
-
+```
 kubectl top pod -l app=backend-api --containers -n backend-namespace
+```
 
 ![alt text](screenshot/image-35.png)
 
@@ -428,8 +432,9 @@ Replace app=backend-api or app=data-api with the actual labels you’ve applied 
 The --containers flag will show CPU and memory usage at the container level within each pod.
 
 - Data API Container:
-
+```
 kubectl top pod -l app=data-api --containers -n data-namespace
+```
 
 ![alt text](screenshot/image-36.png)
 
@@ -478,8 +483,9 @@ kubectl apply -f health-check-cronjob.yaml
 
 ```
 kubectl get cronjob -n health-namespace
-![alt text](screenshot/image-40.png)
 ```
+![alt text](screenshot/image-40.png)
+
 
 - Check the logs from the health check script using a dedicated log pod. First, create a pod to access the logs:
 
@@ -491,10 +497,10 @@ kubectl run log-access --image=alpine --restart=Never -n health-namespace -- /bi
 In the screenshot below, you can see that the health checks for both the backend and data APIs passed successfully. However, the health check for the "Download External Logs" endpoint of the backend failed because we used a dummy endpoint for that check.
 ```
 - kubectl exec -it log-access -n health-namespace -- cat /var/log/health_check.log
-
+```
 ![alt text](screenshot/image-39.png)
 
-```
+
 - Delete the log access pod after you have retrieved the logs:
 
 ```
