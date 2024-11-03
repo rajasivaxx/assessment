@@ -114,7 +114,7 @@ To deploy backend_api and data_api applications on Kubernetes, we created separa
 - Chart.yaml: Defines chart metadata for data_api, similar to backend_api.
 - Values.yaml: Contains values specific to data_api, such as:
 - image: Docker image for data_api (e.g., data-api:v1).
-- port: Application port (5000).
+- port: Application port (5001).
 - Templates:
   deployment-data.yaml: Defines the deployment configuration for data_api.
   service-data.yaml: Defines the service configuration to expose data_api on port 80 within the Kubernetes cluster.
@@ -133,10 +133,10 @@ To automate the deployment of backend_api and data_api applications on the Kuber
 
 #### Playbooks
 
-#### playbook_backend.yml: Automates the deployment of backend_api.
-
 Installs Helm collection: Ensures the community.kubernetes collection is installed.
 Adds Helm repository: Ensures that the Helm repository is available.
+
+#### playbook_backend.yml: Automates the deployment of backend_api.
 
 Deploys backend: Uses Helm to deploy backend_api from the specified chart path (../helm) into backend-namespace.
 ```
@@ -148,8 +148,6 @@ ansible-playbook playbook_backend.yml
 
 #### playbook_data.yml: Automates the deployment of data_api.
 
-Installs Helm collection: Ensures the community.kubernetes collection is installed.
-Adds Helm repository: Ensures that the Helm repository is available.
 Deploys data API: Uses Helm to deploy data_api from the specified chart path (../helm-data) into data-namespace.
 ```
 ansible-playbook playbook_data.yml
@@ -159,7 +157,7 @@ ansible-playbook playbook_data.yml
 
 This Ansible setup streamlines the process of deploying both applications to Kubernetes, with each playbook responsible for a single API. The configuration is designed to be adaptable, allowing for changes to namespaces or Helm release names through the group_vars/all.yml file.
 
-## 7. Verifying Deployments and Capturing Screenshots
+## 7. Verifying Deployments
 
 #### Check the Pods in Kind Cluster Namespaces
 Run the following command to list the pods in each namespace:
@@ -192,7 +190,8 @@ The backend API has two main routes:
 
 - Root Route (/): This route generates and logs random messages. You should see log entries when you access this endpoint.
 
-- Download External Logs Route (/download_external_logs): This route attempts to interact with an external API. If you do not specify a valid environment, you will receive an error message indicating "Invalid environment".
+- Download External Logs Route (/download_external_logs): This route attempts to interact with an external API.
+  If you do not specify a valid environment, you will receive an error message indicating "Invalid environment".
 
 ![alt text](screenshot/image-12.png)
 
@@ -206,11 +205,13 @@ Since this is a dummy URL with dummy integration keys, no successful connection 
 
 Similarly, set up port forwarding for the data API service:
 
+```
 kubectl port-forward svc/data-api-service-unique 5001:80 -n data-namespace
+```
 
 ![alt text](screenshot/image-37.png)
 
-Visit http://localhost:5001 in the browser and take a screenshot of the log output.
+Visit http://localhost:5001 in the browser and check the log output.
 
 
 ![alt text](screenshot/image-38.png)
@@ -265,10 +266,11 @@ kubectl get all --namespace monitoring
 
 
 - Access Dashboards:
-
+```
 Prometheus: http://<nodeIP>:30000/graph
 AlertManager: http://<nodeIP>:32000/graph
 Grafana: http://<nodeIP>:31000/
+```
 
 - Credentials for Grafana:
 
@@ -288,8 +290,8 @@ Password: prom-operator
 
 Monitoring Backend and Data API Container Resource Utilization
 
-- Backend API Container CPU Usage
-To monitor the CPU usage of the backend API container, use the following query:
+Backend API Container CPU Usage
+- To monitor the CPU usage of the backend API container, use the following query:
 
 sum(rate(container_cpu_usage_seconds_total{container="backend-api"}[5m])) by (pod)
 
@@ -352,10 +354,11 @@ Query: sum(rate(container_fs_reads_bytes_total[5m])) by (container)
 ![alt text](screenshot/image-28.png)
 
 #### Configuring Metrics Server
+
 In addition to Prometheus, we also configured the Metrics Server in our Kind cluster to obtain quick and straightforward insights into resource usage. This enables us to use commands like kubectl top for monitoring resources.
 
-Steps to Install Metrics Server:
-- Add the Metrics Server Helm Repository:
+#### Steps to Install Metrics Server:
+Add the Metrics Server Helm Repository:
 
 ```
 helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
@@ -402,6 +405,7 @@ Using the Metrics Server alongside Prometheus provides a comprehensive view of y
 To monitor resource utilization specifically for our backend and data API containers in Grafana, you can use label filters on metrics. This allows us to isolate metrics for particular containers within Pods.
 
 #### Grafana Queries
+
 Backend API Container Utilization
 
 - CPU Usage:
@@ -455,7 +459,8 @@ The following files are included in the health-check directory:
 
 - Dockerfile: This file defines the Docker image for the health check service. It includes the necessary dependencies and configurations to run the health check script.
 
-- health-check-script.sh: This shell script contains the logic for performing health checks against the backend and data APIs. It logs the results of these checks to a specified log file. The script uses curl to send HTTP requests to the APIs and checks for expected HTTP response codes.
+- health-check-script.sh: This shell script contains the logic for performing health checks against the backend and data APIs. It logs the results of these checks to a specified log file. The script uses curl to send HTTP 
+  requests to the APIs and checks for expected HTTP response codes.
 
 - health-check-cronjob.yaml: This file defines a Kubernetes CronJob that runs the health check script at specified intervals, ensuring that service availability is regularly monitored.
 
@@ -516,7 +521,7 @@ This process allows you to effectively monitor the health of your services and r
 
 ## Conclusion
 
-We updated the backend Python code and deployed two applications and a health check script to Kubernetes. The health check script now monitors the backend API calls. We used Prometheus, Grafana, and Metrics Server for monitoring, and deployed everything with Helm and Ansible.
+We updated the Python code and deployed two applications and a health check script to Kubernetes. The health check script now monitors backend and data API calls. We used Prometheus, Grafana, and Metrics Server for monitoring, and deployed everything with Helm and Ansible.
 
 ## Submission Details
 
