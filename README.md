@@ -139,6 +139,9 @@ Installs Helm collection: Ensures the community.kubernetes collection is install
 Adds Helm repository: Ensures that the Helm repository is available.
 
 Deploys backend: Uses Helm to deploy backend_api from the specified chart path (../helm) into backend-namespace.
+```
+ansible-playbook playbook_backend.yml
+```
 
 ![alt text](screenshot/image-2.png)
 
@@ -148,6 +151,9 @@ Deploys backend: Uses Helm to deploy backend_api from the specified chart path (
 Installs Helm collection: Ensures the community.kubernetes collection is installed.
 Adds Helm repository: Ensures that the Helm repository is available.
 Deploys data API: Uses Helm to deploy data_api from the specified chart path (../helm-data) into data-namespace.
+```
+ansible-playbook playbook_data.yml
+```
 
 ![alt text](screenshot/image-3.png)
 
